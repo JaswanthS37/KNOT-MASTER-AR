@@ -28,7 +28,9 @@
   ExportUid: 00000000-0000-0000-0000-000000000000
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
+    captionTextObject: false
     material: false
+    titleTextObject: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -39,8 +41,12 @@
     []
   DefaultScriptInputs:
     - material: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      captionTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      titleTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
   ScriptTypes:
     -
       {}
   InputLines:
     - // @input Asset.Material material
+    - // @input SceneObject captionTextObject
+    - // @input SceneObject titleTextObject
