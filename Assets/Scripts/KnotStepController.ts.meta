@@ -28,9 +28,14 @@
   ExportUid: 00000000-0000-0000-0000-000000000000
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
-    buttonObject: false
+    captionTextObject: false
     knotTutorialObject: false
-    stepTextObject: false
+    nextButton: false
+    prevButton: false
+    replayButton: false
+    startOverButton: false
+    titleTextObject: false
+    turnButton: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -41,12 +46,22 @@
     []
   DefaultScriptInputs:
     - knotTutorialObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
-      buttonObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
-      stepTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      prevButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      replayButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      nextButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      startOverButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      turnButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      captionTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      titleTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
   ScriptTypes:
     -
       {}
   InputLines:
-    - '// @input SceneObject knotTutorialObject {"hint":"Drag the SceneObject with the OverhandKnotTutorial script"}'
-    - '// @input SceneObject buttonObject {"hint":"Drag the 3D button SceneObject (e.g. NextButton)"}'
-    - '// @input SceneObject stepTextObject {"hint":"Optional Text or Text3D object for the step description"}'
+    - // @input SceneObject knotTutorialObject
+    - // @input SceneObject prevButton
+    - // @input SceneObject replayButton
+    - // @input SceneObject nextButton
+    - // @input SceneObject startOverButton
+    - // @input SceneObject turnButton
+    - // @input SceneObject captionTextObject
+    - // @input SceneObject titleTextObject

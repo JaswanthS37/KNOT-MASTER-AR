@@ -1,105 +1,124 @@
 import { Interactable } from "SpectaclesInteractionKit.lspkg/Components/Interaction/Interactable/Interactable";
+import { OverhandKnotTutorial } from "./OverhandKnotTutorial";
 
 /**
  * KnotStepController.ts
  *
- * Handles user interaction to advance through the knot tutorial steps.
- * Supports:
- *   1. SIK 3D Hand Pinch / Poke on the floating button (for SPECS AR glasses).
- *   2. Direct window tap/click fallback (for fast desktop preview testing).
+ * Controls 3D world-anchored buttons for the Overhand Knot tutorial:
+ * - Previous Step, Replay Step, Next Step (main row under rope)
+ * - Start Over and Turn (360 rotation) off to the side
+ * - Automatically enables/disables Previous on step 1 and Next on last step
+ * - Supports both SIK 3D Hand pinch/poke and screen tap fallback
  */
+
 @component
 export class KnotStepController extends BaseScriptComponent {
   @input
-  @hint("Drag the SceneObject with the OverhandKnotTutorial script")
   knotTutorialObject!: SceneObject;
 
   @input
-  @hint("Drag the 3D button SceneObject (e.g. NextButton)")
   @allowUndefined
-  buttonObject?: SceneObject;
+  prevButton?: SceneObject;
 
   @input
-  @hint("Optional Text or Text3D object for the step description")
   @allowUndefined
-  stepTextObject?: SceneObject;
+  replayButton?: SceneObject;
 
-  private tutorial: any = null;
-  private currentStepIndex: number = 0;
-  private buttonInteractable: Interactable | null = null;
+  @input
+  @allowUndefined
+  nextButton?: SceneObject;
 
-  private readonly STEP_TITLES = [
-    "Step 0: Floating Rope",
-    "Step 1: Form a Loop",
-    "Step 2: Pass End Through",
-    "Step 3: Pull Tight (Done!)"
-  ];
+  @input
+  @allowUndefined
+  startOverButton?: SceneObject;
+
+  @input
+  @allowUndefined
+  turnButton?: SceneObject;
+
+  @input
+  @allowUndefined
+  captionTextObject?: SceneObject;
+
+  @input
+  @allowUndefined
+  titleTextObject?: SceneObject;
+
+  private tutorial: OverhandKnotTutorial | null = null;
 
   onAwake(): void {
-    this.createEvent("OnStartEvent").bind(() => this.onStart());
+    this.createEvent("OnStartEvent").bind(() => this.initController());
   }
 
-  private onStart(): void {
+  private initController(): void {
     this.findTutorial();
-    this.setupButtonInteraction();
 
-    // Also support global tap for instant testing in preview
+    // Wire buttons
+    this.setupButton(this.prevButton, () => this.onPrevPressed());
+    this.setupButton(this.replayButton, () => this.onReplayPressed());
+    this.setupButton(this.nextButton, () => this.onNextPressed());
+    this.setupButton(this.startOverButton, () => this.onStartOverPressed());
+    this.setupButton(this.turnButton, () => this.onTurnPressed());
+
+    // Screen tap/touch fallback for rapid testing in preview
     this.createEvent("TapEvent").bind(() => {
-      this.triggerNextStep();
+      console.log("[KnotStepController] TapEvent fired");
+      this.onNextPressed();
     });
 
-    this.updateText();
-    console.log("[KnotStepController] Initialized. Current: " + this.STEP_TITLES[0]);
+    this.createEvent("TouchEndEvent").bind(() => {
+      console.log("[KnotStepController] TouchEndEvent fired");
+      this.onNextPressed();
+    });
+
+    // Wire text objects to tutorial
+    if (this.tutorial) {
+      if (this.captionTextObject) this.tutorial.captionTextObject = this.captionTextObject;
+      if (this.titleTextObject) this.tutorial.titleTextObject = this.titleTextObject;
+    }
+
+    this.updateButtonStates();
+    console.log("[KnotStepController] All 3D World Controls initialized successfully.");
   }
 
   private findTutorial(): void {
     if (!this.knotTutorialObject) {
-      console.warn("[KnotStepController] knotTutorialObject is not assigned.");
+      console.warn("[KnotStepController] knotTutorialObject not assigned.");
       return;
     }
     const scripts = this.knotTutorialObject.getComponents("Component.ScriptComponent");
     for (const sc of scripts) {
-      const script = sc as any;
-      if (script && typeof script.advanceStep === "function") {
-        this.tutorial = script;
+      const s = sc as any;
+      if (s && typeof s.nextStep === "function") {
+        this.tutorial = s as OverhandKnotTutorial;
         break;
       }
     }
   }
 
-  private setupButtonInteraction(): void {
-    if (!this.buttonObject) {
-      return;
-    }
+  private setupButton(btnObj?: SceneObject, onClick?: () => void): void {
+    if (!btnObj || !onClick) return;
 
-    // Ensure button has a ColliderComponent so SIK can detect hits
-    let collider = this.buttonObject.getComponent("Component.ColliderComponent");
+    let collider = btnObj.getComponent("Component.ColliderComponent");
     if (!collider) {
-      collider = this.buttonObject.createComponent("Component.ColliderComponent");
+      collider = btnObj.createComponent("Component.ColliderComponent");
     }
 
-    // Ensure button has SIK Interactable component
-    let interactable = this.buttonObject.getComponent(Interactable.getTypeName()) as Interactable;
+    let interactable = btnObj.getComponent(Interactable.getTypeName()) as Interactable;
     if (!interactable) {
-      interactable = this.buttonObject.createComponent(Interactable.getTypeName()) as Interactable;
+      interactable = btnObj.createComponent(Interactable.getTypeName()) as Interactable;
     }
 
-    this.buttonInteractable = interactable;
-
-    if (this.buttonInteractable) {
-      // Trigger when pinch/poke activates
-      this.buttonInteractable.onTriggerEnd.add(() => {
-        console.log("[KnotStepController] Button pinched/triggered by hand!");
-        this.animateButtonPress();
-        this.triggerNextStep();
+    if (interactable) {
+      interactable.onTriggerEnd.add(() => {
+        this.animateButtonBounce(btnObj);
+        onClick();
       });
-      console.log("[KnotStepController] SIK Interactable attached to button.");
     }
   }
 
-  private animateButtonPress(): void {
-    if (!this.buttonObject) return;
-    const trans = this.buttonObject.getTransform();
+  private animateButtonBounce(obj: SceneObject): void {
+    const trans = obj.getTransform();
     const origScale = trans.getLocalScale();
     trans.setLocalScale(origScale.uniformScale(0.85));
 
@@ -110,31 +129,83 @@ export class KnotStepController extends BaseScriptComponent {
     delay.reset(0.12);
   }
 
-  public triggerNextStep(): void {
+  public onNextPressed(): void {
+    if (!this.tutorial) this.findTutorial();
     if (!this.tutorial) {
-      this.findTutorial();
-    }
-    if (!this.tutorial) {
-      console.error("[KnotStepController] OverhandKnotTutorial component not found.");
+      console.error("[KnotStepController] Tutorial reference not found");
       return;
     }
 
-    if (this.currentStepIndex < 3) {
-      this.currentStepIndex++;
-      this.tutorial.advanceStep();
-      this.updateText();
-      console.log("[KnotStepController] -> Advanced to: " + this.STEP_TITLES[this.currentStepIndex]);
+    if (!this.tutorial.isAtLastStep()) {
+      console.log("[KnotStepController] Advancing to next step...");
+      this.tutorial.nextStep();
+      this.updateButtonStates();
     } else {
-      console.log("[KnotStepController] Tutorial is already complete (Step 3).");
+      console.log("[KnotStepController] Already on final step.");
     }
   }
 
-  private updateText(): void {
-    if (!this.stepTextObject) return;
-    const textComp = this.stepTextObject.getComponent("Component.Text") as any ||
-                     this.stepTextObject.getComponent("Component.Text3D") as any;
-    if (textComp) {
-      textComp.text = this.STEP_TITLES[this.currentStepIndex];
+  public onPrevPressed(): void {
+    if (!this.tutorial) this.findTutorial();
+    if (!this.tutorial) return;
+
+    if (!this.tutorial.isAtFirstStep()) {
+      console.log("[KnotStepController] Returning to previous step...");
+      this.tutorial.previousStep();
+      this.updateButtonStates();
+    } else {
+      console.log("[KnotStepController] Already on step 1.");
+    }
+  }
+
+  public onReplayPressed(): void {
+    if (!this.tutorial) this.findTutorial();
+    if (this.tutorial) {
+      console.log("[KnotStepController] Replaying current step...");
+      this.tutorial.replayStep();
+    }
+  }
+
+  public onStartOverPressed(): void {
+    if (!this.tutorial) this.findTutorial();
+    if (this.tutorial) {
+      console.log("[KnotStepController] Starting over from Step 1...");
+      this.tutorial.startOver();
+      this.updateButtonStates();
+    }
+  }
+
+  public onTurnPressed(): void {
+    if (!this.tutorial) this.findTutorial();
+    if (this.tutorial) {
+      console.log("[KnotStepController] Triggering 360 rotation...");
+      this.tutorial.triggerRotation();
+    }
+  }
+
+  public updateButtonStates(): void {
+    if (!this.tutorial) return;
+
+    const isFirst = this.tutorial.isAtFirstStep();
+    const isLast = this.tutorial.isAtLastStep();
+
+    if (this.prevButton) {
+      this.setButtonVisualState(this.prevButton, !isFirst);
+    }
+    if (this.nextButton) {
+      this.setButtonVisualState(this.nextButton, !isLast);
+    }
+  }
+
+  private setButtonVisualState(btn: SceneObject, enabled: boolean): void {
+    const rmv = btn.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+    if (rmv && rmv.mainMaterial) {
+      const pass = rmv.mainMaterial.mainPass;
+      if (pass && pass.baseColor) {
+        pass.baseColor = enabled
+          ? new vec4(0.2, 0.65, 0.95, 0.9)
+          : new vec4(0.3, 0.35, 0.4, 0.4);
+      }
     }
   }
 }
