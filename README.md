@@ -3,7 +3,7 @@ IMPORTANT : THE ACTUAL PROJECT IS PRESENT ONLY IN THE "main" BRANCH not "dummy"
 # Knot Master AR: Spatial Knot & Tie Tutor 🪢👔
 
 > **Learn AR with SPECS (Devpost Hackathon Submission)**  
-> *A hands-free, step-by-step 3D spatial tutor for mastering knots and neckties on Snap Spectacles (SPECS 27).*
+> *A hands-free, step-by-step 3D spatial tutor for mastering knots and neckties on Snap Spectacles.*
 
 ---
 
@@ -31,7 +31,7 @@ Mastering knots and neckties from 2D flat video tutorials is clumsy: users const
 
 ## 🛠️ Built With
 
-- **Target Platform:** Snap Spectacles (SPECS 27)
+- **Target Platform:** Snap Spectacles
 - **Engine / IDE:** Snap Lens Studio 5.x
 - **Language:** TypeScript
 - **Interactions:** Spectacles Interaction Kit (`SpectaclesInteractionKit.lspkg`)
@@ -45,7 +45,7 @@ Mastering knots and neckties from 2D flat video tutorials is clumsy: users const
 
 ### Prerequisites
 - [Lens Studio 5.22+](https://ar.snap.com/lens-studio) installed.
-- (Optional) Snap Spectacles (2024 / SPECS 27) device for hardware deployment.
+- (Optional) Snap Spectacles device for hardware deployment.
 
 ### Running in Lens Studio
 1. Clone this repository:
