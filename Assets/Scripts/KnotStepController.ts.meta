@@ -29,13 +29,20 @@
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
     captionTextObject: false
+    iconMaterial: false
     knotTutorialObject: false
     nextButton: false
+    nextIconTex: false
+    planeMesh: false
     prevButton: false
+    prevIconTex: false
     replayButton: false
+    replayIconTex: false
+    restartIconTex: false
     startOverButton: false
     titleTextObject: false
     turnButton: false
+    turnIconTex: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -51,6 +58,13 @@
       nextButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       startOverButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       turnButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      planeMesh: !<reference.RenderMesh> 00000000-0000-0000-0000-000000000000
+      iconMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      prevIconTex: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      nextIconTex: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      replayIconTex: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      restartIconTex: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      turnIconTex: !<reference.Texture> 00000000-0000-0000-0000-000000000000
       captionTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       titleTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
   ScriptTypes:
@@ -63,5 +77,12 @@
     - // @input SceneObject nextButton
     - // @input SceneObject startOverButton
     - // @input SceneObject turnButton
+    - // @input Asset.RenderMesh planeMesh
+    - // @input Asset.Material iconMaterial
+    - // @input Asset.Texture prevIconTex
+    - // @input Asset.Texture nextIconTex
+    - // @input Asset.Texture replayIconTex
+    - // @input Asset.Texture restartIconTex
+    - // @input Asset.Texture turnIconTex
     - // @input SceneObject captionTextObject
     - // @input SceneObject titleTextObject

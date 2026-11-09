@@ -71,8 +71,7 @@ Nodes:
           Variable: 1.0
         DepthMode:
           ItemIndex: 0
-          ItemList: |2-
-            		Non-Linear - Normalized [0 to 1] ) :		Linear - Normalized [-1 to 1] :		View Space - Non-Normalized [-near to -far]	
+          ItemList: "Non-Linear - Normalized [0 to 1] : Linear - Normalized [-1 to 1] : View Space - Non-Normalized [-near to -far]"
         DontFreezeSpec:
           Variable: false
         FinalColor:
@@ -90,18 +89,31 @@ Nodes:
         FinalColor3:
           ClassType1: COLOR
           Variable: [1.0, 1.0, 1.0, 1.0]
+        GSplatPointSize:
+          Variable: 0.0
+        GSplatRotation:
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        GSplatScale:
+          Variable: [0.0, 0.0, 0.0]
+        Motion Vector Pass:
+          ItemIndex: 0
+          ItemList: "Write Velocity and Depth : Discard Velocity but Write Depth : Discard Velocity and Depth"
         Negative:
           Variable: false
+        PrevWorldPosition:
+          Variable: [0.0, 0.0, 0.0]
         RayDirection:
           Variable: [0.0, 1.0, 0.0]
         RayOrigin:
           Variable: [0.0, 0.0, 0.0]
+        ShowPrevPos:
+          Variable: false
         Targets:
           ItemIndex: 0
           ItemList: "1 : 2 : 3 : 4"
         Type:
           ItemIndex: 0
-          ItemList: "3D : Post Effect : Hair"
+          ItemList: "3D : Post Effect : Hair : Gaussian Splatting"
         WorldNormal:
           Variable: [0.0, 1.0, 0.0]
         WorldPosition:
@@ -405,6 +417,8 @@ Nodes:
             NodeLevelID: 7
             PortID: Output
           Variable: [1.0, 1.0, 1.0, 1.0]
+        BitmojiShading:
+          Variable: false
         Emissive:
           ClassType1: COLOR
           Variable: [0.0, 0.0, 0.0, 1.0]
@@ -459,12 +473,4 @@ Nodes:
   PositionY: 0
   TemplateID: nodes_main_subgraph
   Title1: ""
-  ViewOffsetX0: 329
-  ViewOffsetX1: 329
-  ViewOffsetX2: 329
-  ViewOffsetX3: 329
-  ViewOffsetY0: -168
-  ViewOffsetY1: -168
-  ViewOffsetY2: -168
-  ViewOffsetY3: -168
 SystemID: dev.snap.shaders

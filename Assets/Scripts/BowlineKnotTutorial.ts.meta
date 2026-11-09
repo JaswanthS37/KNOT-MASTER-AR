@@ -1,0 +1,64 @@
+- !<AssetImportMetadata/9263c5a8-8431-4873-ba26-7bf5c0d02d3d>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 31cccf06-e9f5-499a-bd67-b085af327b81
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 31cccf06-e9f5-499a-bd67-b085af327b81
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 4b428e0d-e722-4326-bb8c-1a9d3fa96d28
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/4b428e0d-e722-4326-bb8c-1a9d3fa96d28>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: edd253e3-f581-4e6d-b989-0aea8ff58b80
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    captionTextObject: false
+    crimsonMaterial: false
+    hempMaterial: false
+    modelCenterY: false
+    modelScale: false
+    ropeRadius: false
+    titleTextObject: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - hempMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      crimsonMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      captionTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      titleTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      modelScale: 1.250000
+      modelCenterY: !<float> 1.000000
+      ropeRadius: 0.550000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - // @input Asset.Material hempMaterial
+    - // @input Asset.Material crimsonMaterial
+    - // @input SceneObject captionTextObject
+    - // @input SceneObject titleTextObject
+    - // @input float modelScale = 1
+    - // @input float modelCenterY
+    - // @input float ropeRadius = 0.55

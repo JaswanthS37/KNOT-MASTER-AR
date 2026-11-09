@@ -1,4 +1,4 @@
-import { OVERHAND_KNOT_DATA, KnotStep } from "../knots/OverhandKnotData";
+import { OVERHAND_KNOT_DATA, OVERHAND_WAYPOINT_2_TO_3, OVERHAND_WAYPOINT_3_TO_4, KnotStep } from "../knots/OverhandKnotData";
 
 /**
  * OverhandKnotTutorial.ts
@@ -6,15 +6,25 @@ import { OVERHAND_KNOT_DATA, KnotStep } from "../knots/OverhandKnotData";
  * Core engine for the Overhand Knot SPECS AR tutorial.
  * - Loads knot steps from data
  * - Resamples each step to exactly 64 arc-length equidistant points
- * - Smooth 1.2s ease-in/out interpolation between step shapes
- * - Distinct 2-tone rope coloring (Standing part 80% / Working end 20%)
+ * - Natural two-phase animation between Step 2 and Step 3 with loop contraction
+ * - Dual-material two-tone rendering (Tan Hemp standing rope 80% / Crimson working end 20%)
  * - Full navigation: Next, Previous, Replay, Go to Step N, Start Over
  * - Y-axis 360 rotation for 3D inspection
  */
 
 @component
 export class OverhandKnotTutorial extends BaseScriptComponent {
-  @input material!: Material;
+  @input
+  @allowUndefined
+  material?: Material;
+
+  @input
+  @allowUndefined
+  hempMaterial?: Material;
+
+  @input
+  @allowUndefined
+  crimsonMaterial?: Material;
 
   // Text references
   @input
@@ -27,13 +37,9 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
 
   // Geometry configuration
   private readonly ROPE_RADIUS = 0.75; // cm
-  private readonly RADIAL_SEGMENTS = 12;
+  private readonly RADIAL_SEGMENTS = 16;
   public readonly POINT_COUNT = 64; // exactly 64 points per step
-
-  // Color scheme: Standing part vs Working end
-  private readonly COLOR_STANDING: [number, number, number, number] = [0.84, 0.64, 0.38, 1.0];
-  private readonly COLOR_WORKING: [number, number, number, number] = [0.95, 0.18, 0.15, 1.0];
-  private readonly WORKING_END_RATIO = 0.8;
+  private readonly TRANSITION_INDEX = 51; // 80% standing rope (0..51), 20% working end (51..63)
 
   // Animation parameters
   private readonly ANIM_DURATION = 1.2; // seconds per transition
@@ -47,6 +53,8 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
 
   // Resampled 64-point curves for each step
   private stepCurves: [number, number, number][][] = [];
+  private waypoint2to3Curve: [number, number, number][] = [];
+  private waypoint3to4Curve: [number, number, number][] = [];
   private animStartCurve: [number, number, number][] = [];
   private animTargetCurve: [number, number, number][] = [];
   private currentCurve: [number, number, number][] = [];
@@ -57,14 +65,57 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
   private readonly ROTATION_SPEED = 0.7; // ~1.4 seconds for 360 spin
   private initialYRotation = 0;
 
-  // Components
-  private builder!: MeshBuilder;
-  private rmv!: RenderMeshVisual;
+  // Dual-mesh visual components
+  private standingRmv!: RenderMeshVisual;
+  private workingRmv!: RenderMeshVisual;
+  private workingChildObj?: SceneObject;
 
   onAwake(): void {
-    this.rmv = this.sceneObject.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
-    if (!this.rmv) {
-      this.rmv = this.sceneObject.createComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+    // 1. Standing line RMV on main SceneObject
+    this.standingRmv = this.sceneObject.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+    if (!this.standingRmv) {
+      this.standingRmv = this.sceneObject.createComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+    }
+
+    // 2. Working end RMV on child SceneObject 'OverhandWorkingEnd'
+    let foundChild: SceneObject | null = null;
+    for (let i = 0; i < this.sceneObject.getChildrenCount(); i++) {
+      const child = this.sceneObject.getChild(i);
+      if (child.name === "OverhandWorkingEnd") {
+        foundChild = child;
+        break;
+      }
+    }
+
+    if (foundChild) {
+      this.workingChildObj = foundChild;
+    } else {
+      this.workingChildObj = global.scene.createSceneObject("OverhandWorkingEnd");
+      this.workingChildObj.setParent(this.sceneObject);
+    }
+
+    this.workingChildObj.layer = this.sceneObject.layer;
+    const childTrans = this.workingChildObj.getTransform();
+    childTrans.setLocalPosition(vec3.zero());
+    childTrans.setLocalRotation(quat.quatIdentity());
+    childTrans.setLocalScale(vec3.one());
+
+    this.workingRmv = this.workingChildObj.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+    if (!this.workingRmv) {
+      this.workingRmv = this.workingChildObj.createComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+    }
+
+    // 3. Material assignment: Hemp for standing, Crimson for working
+    if (this.hempMaterial) {
+      this.standingRmv.mainMaterial = this.hempMaterial;
+    } else if (this.material) {
+      this.standingRmv.mainMaterial = this.material;
+    }
+
+    if (this.crimsonMaterial) {
+      this.workingRmv.mainMaterial = this.crimsonMaterial;
+    } else if (this.material) {
+      this.workingRmv.mainMaterial = this.material;
     }
 
     // Resample all steps to exactly 64 points by arc length at load time
@@ -75,11 +126,7 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
     this.targetStepIndex = 0;
     this.previousStepIndex = 0;
     this.currentCurve = this.cloneCurve(this.stepCurves[0]);
-    this.rebuildMesh(this.currentCurve);
-
-    if (this.material && this.rmv) {
-      this.rmv.mainMaterial = this.material;
-    }
+    this.rebuildDualMesh(this.currentCurve);
 
     // Register update loop for animations and rotations
     this.createEvent("UpdateEvent").bind(() => this.onUpdate());
@@ -102,6 +149,12 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
       const resampled = this.resampleByArcLength(rawPoints, this.POINT_COUNT);
       this.stepCurves.push(resampled);
     }
+
+    // Resample waypoint for Step 2 -> Step 3
+    this.waypoint2to3Curve = this.resampleByArcLength(OVERHAND_WAYPOINT_2_TO_3, this.POINT_COUNT);
+
+    // Resample waypoint for Step 3 -> Step 4 tightening
+    this.waypoint3to4Curve = this.resampleByArcLength(OVERHAND_WAYPOINT_3_TO_4, this.POINT_COUNT);
   }
 
   /**
@@ -158,17 +211,76 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
     if (this.isAnimating) {
       this.animTimer += dt;
       const linearT = Math.min(1.0, this.animTimer / this.ANIM_DURATION);
-      // Smoothstep ease in-out
-      const easeT = linearT * linearT * (3.0 - 2.0 * linearT);
 
-      this.currentCurve = this.interpolateCurves(this.animStartCurve, this.animTargetCurve, easeT);
-      this.rebuildMesh(this.currentCurve);
+      // Check if transitioning between Step 2 (index 1) and Step 3 (index 2)
+      const is2to3 = (this.previousStepIndex === 1 && this.targetStepIndex === 2);
+      const is3to2 = (this.previousStepIndex === 2 && this.targetStepIndex === 1);
+
+      // Check if transitioning between Step 3 (index 2) and Step 4 (index 3)
+      const is3to4 = (this.previousStepIndex === 2 && this.targetStepIndex === 3);
+      const is4to3 = (this.previousStepIndex === 3 && this.targetStepIndex === 2);
+
+      if (is2to3) {
+        // Two-phase motion:
+        // First half (t in [0, 0.5]): Step 2 -> Waypoint (tail swings down & behind into -Z)
+        // Second half (t in [0.5, 1.0]): Waypoint -> Step 3 (tail feeds forward through loop center)
+        if (linearT < 0.5) {
+          const subT = linearT / 0.5;
+          const easeT = subT * subT * (3.0 - 2.0 * subT);
+          this.currentCurve = this.interpolateCurves(this.stepCurves[1], this.waypoint2to3Curve, easeT);
+        } else {
+          const subT = (linearT - 0.5) / 0.5;
+          const easeT = subT * subT * (3.0 - 2.0 * subT);
+          this.currentCurve = this.interpolateCurves(this.waypoint2to3Curve, this.stepCurves[2], easeT);
+        }
+      } else if (is3to2) {
+        // Reverse two-phase motion
+        if (linearT < 0.5) {
+          const subT = linearT / 0.5;
+          const easeT = subT * subT * (3.0 - 2.0 * subT);
+          this.currentCurve = this.interpolateCurves(this.stepCurves[2], this.waypoint2to3Curve, easeT);
+        } else {
+          const subT = (linearT - 0.5) / 0.5;
+          const easeT = subT * subT * (3.0 - 2.0 * subT);
+          this.currentCurve = this.interpolateCurves(this.waypoint2to3Curve, this.stepCurves[1], easeT);
+        }
+      } else if (is3to4) {
+        // Two-phase cinch:
+        // First half (t in [0, 0.5]): Step 3 -> Waypoint (working end stays threaded through loop window while loop contracts)
+        // Second half (t in [0.5, 1.0]): Waypoint -> Step 4 (cinch tightens shut into snug knot as ends pull taut)
+        if (linearT < 0.5) {
+          const subT = linearT / 0.5;
+          const easeT = subT * subT * (3.0 - 2.0 * subT);
+          this.currentCurve = this.interpolateCurves(this.stepCurves[2], this.waypoint3to4Curve, easeT);
+        } else {
+          const subT = (linearT - 0.5) / 0.5;
+          const easeT = subT * subT * (3.0 - 2.0 * subT);
+          this.currentCurve = this.interpolateCurves(this.waypoint3to4Curve, this.stepCurves[3], easeT);
+        }
+      } else if (is4to3) {
+        // Reverse two-phase cinch
+        if (linearT < 0.5) {
+          const subT = linearT / 0.5;
+          const easeT = subT * subT * (3.0 - 2.0 * subT);
+          this.currentCurve = this.interpolateCurves(this.stepCurves[3], this.waypoint3to4Curve, easeT);
+        } else {
+          const subT = (linearT - 0.5) / 0.5;
+          const easeT = subT * subT * (3.0 - 2.0 * subT);
+          this.currentCurve = this.interpolateCurves(this.waypoint3to4Curve, this.stepCurves[2], easeT);
+        }
+      } else {
+        // Standard smoothstep ease in-out
+        const easeT = linearT * linearT * (3.0 - 2.0 * linearT);
+        this.currentCurve = this.interpolateCurves(this.animStartCurve, this.animTargetCurve, easeT);
+      }
+
+      this.rebuildDualMesh(this.currentCurve);
 
       if (linearT >= 1.0) {
         this.isAnimating = false;
         this.currentStepIndex = this.targetStepIndex;
         this.currentCurve = this.cloneCurve(this.stepCurves[this.currentStepIndex]);
-        this.rebuildMesh(this.currentCurve);
+        this.rebuildDualMesh(this.currentCurve);
         this.updateTexts();
         console.log(`[OverhandKnotTutorial] Completed transition to Step ${this.currentStepIndex + 1}.`);
       }
@@ -242,7 +354,6 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
   }
 
   public replayStep(): void {
-    // Replay animates from the previous step's shape into the current step's shape
     this.animStartCurve = this.cloneCurve(this.stepCurves[this.previousStepIndex]);
     this.animTargetCurve = this.cloneCurve(this.stepCurves[this.currentStepIndex]);
     this.targetStepIndex = this.currentStepIndex;
@@ -267,7 +378,15 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
     return this.currentStepIndex;
   }
 
+  public getTargetStep(): number {
+    return this.targetStepIndex !== undefined ? this.targetStepIndex : this.currentStepIndex;
+  }
+
   public getStepCount(): number {
+    return this.stepCurves.length;
+  }
+
+  public getTotalSteps(): number {
     return this.stepCurves.length;
   }
 
@@ -301,44 +420,57 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
   }
 
   /**
-   * Rebuilds the tube mesh from 3D curve points.
+   * Rebuilds both tube meshes (Standing rope + Working end).
    */
-  public rebuildMesh(curve: [number, number, number][]): void {
+  public rebuildDualMesh(curve: [number, number, number][]): void {
     const N = curve.length;
     if (N < 2) return;
 
-    this.builder = new MeshBuilder([
+    // Segment 1: Standing rope (points 0..TRANSITION_INDEX)
+    const standingCurve = curve.slice(0, this.TRANSITION_INDEX + 1);
+    const standingBuilder = new MeshBuilder([
       { name: "position", components: 3 },
       { name: "normal", components: 3, normalized: true },
-      { name: "color", components: 4 },
+      { name: "texture0", components: 2 },
     ]);
-    this.builder.topology = MeshTopology.Triangles;
-    this.builder.indexType = MeshIndexType.UInt16;
-
-    this.buildTubeWithCaps(
-      this.builder,
-      curve,
-      this.ROPE_RADIUS,
-      this.RADIAL_SEGMENTS
-    );
-
-    this.rmv.mesh = this.builder.getMesh();
-    if (this.material) {
-      this.rmv.mainMaterial = this.material;
+    standingBuilder.topology = MeshTopology.Triangles;
+    standingBuilder.indexType = MeshIndexType.UInt16;
+    this.buildTubeWithCaps(standingBuilder, standingCurve, this.ROPE_RADIUS, this.RADIAL_SEGMENTS, true, false);
+    standingBuilder.updateMesh();
+    this.standingRmv.mesh = standingBuilder.getMesh();
+    if (this.hempMaterial) {
+      this.standingRmv.mainMaterial = this.hempMaterial;
     }
-    this.builder.updateMesh();
+
+    // Segment 2: Working end (points TRANSITION_INDEX..N-1)
+    const workingCurve = curve.slice(this.TRANSITION_INDEX);
+    const workingBuilder = new MeshBuilder([
+      { name: "position", components: 3 },
+      { name: "normal", components: 3, normalized: true },
+      { name: "texture0", components: 2 },
+    ]);
+    workingBuilder.topology = MeshTopology.Triangles;
+    workingBuilder.indexType = MeshIndexType.UInt16;
+    this.buildTubeWithCaps(workingBuilder, workingCurve, this.ROPE_RADIUS, this.RADIAL_SEGMENTS, false, true);
+    workingBuilder.updateMesh();
+    this.workingRmv.mesh = workingBuilder.getMesh();
+    if (this.crimsonMaterial) {
+      this.workingRmv.mainMaterial = this.crimsonMaterial;
+    }
   }
 
   private buildTubeWithCaps(
     builder: MeshBuilder,
     curve: [number, number, number][],
     radius: number,
-    radialSegments: number
+    radialSegments: number,
+    capStart: boolean,
+    capEnd: boolean
   ): void {
     const N = curve.length;
     const R = radialSegments + 1;
 
-    // Tangents
+    // Tangents along polyline
     const tangents: [number, number, number][] = [];
     for (let i = 0; i < N; i++) {
       const pPrev = curve[Math.max(0, i - 1)];
@@ -350,7 +482,7 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
       tangents.push([tx / len, ty / len, tz / len]);
     }
 
-    // Parallel transport frames
+    // Parallel transport frames to eliminate unwanted twisting
     const frames: { n: [number, number, number]; b: [number, number, number] }[] = [];
     const t0 = tangents[0];
     const up: [number, number, number] = Math.abs(t0[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
@@ -407,13 +539,13 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
     for (let i = 0; i < N; i++) {
       const p = curve[i];
       const { n, b } = frames[i];
-      const s = i / (N - 1);
-      const color = s >= this.WORKING_END_RATIO ? this.COLOR_WORKING : this.COLOR_STANDING;
+      const v = N > 1 ? i / (N - 1) : 0;
 
       for (let j = 0; j < R; j++) {
         const theta = (j / radialSegments) * Math.PI * 2;
         const cosT = Math.cos(theta);
         const sinT = Math.sin(theta);
+        const u = j / radialSegments;
 
         const nx = n[0] * cosT + b[0] * sinT;
         const ny = n[1] * cosT + b[1] * sinT;
@@ -426,7 +558,8 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
           nx,
           ny,
           nz,
-          ...color,
+          u,
+          v,
         ]);
       }
     }
@@ -444,40 +577,46 @@ export class OverhandKnotTutorial extends BaseScriptComponent {
     }
 
     // Start cap
-    const startCapCenterIdx = N * R;
-    const pStart = curve[0];
-    const tStart = tangents[0];
-    builder.appendVerticesInterleaved([
-      pStart[0] - tStart[0] * radius * 0.4,
-      pStart[1] - tStart[1] * radius * 0.4,
-      pStart[2] - tStart[2] * radius * 0.4,
-      -tStart[0],
-      -tStart[1],
-      -tStart[2],
-      ...this.COLOR_STANDING,
-    ]);
+    if (capStart) {
+      const startCapCenterIdx = builder.getVerticesCount();
+      const pStart = curve[0];
+      const tStart = tangents[0];
+      builder.appendVerticesInterleaved([
+        pStart[0] - tStart[0] * radius * 0.4,
+        pStart[1] - tStart[1] * radius * 0.4,
+        pStart[2] - tStart[2] * radius * 0.4,
+        -tStart[0],
+        -tStart[1],
+        -tStart[2],
+        0.5,
+        0.0,
+      ]);
 
-    for (let j = 0; j < radialSegments; j++) {
-      indices.push(startCapCenterIdx, tubeVertexStart + j + 1, tubeVertexStart + j);
+      for (let j = 0; j < radialSegments; j++) {
+        indices.push(startCapCenterIdx, tubeVertexStart + j + 1, tubeVertexStart + j);
+      }
     }
 
     // End cap
-    const endCapCenterIdx = startCapCenterIdx + 1;
-    const pEnd = curve[N - 1];
-    const tEnd = tangents[N - 1];
-    builder.appendVerticesInterleaved([
-      pEnd[0] + tEnd[0] * radius * 0.4,
-      pEnd[1] + tEnd[1] * radius * 0.4,
-      pEnd[2] + tEnd[2] * radius * 0.4,
-      tEnd[0],
-      tEnd[1],
-      tEnd[2],
-      ...this.COLOR_WORKING,
-    ]);
+    if (capEnd) {
+      const endCapCenterIdx = builder.getVerticesCount();
+      const pEnd = curve[N - 1];
+      const tEnd = tangents[N - 1];
+      builder.appendVerticesInterleaved([
+        pEnd[0] + tEnd[0] * radius * 0.4,
+        pEnd[1] + tEnd[1] * radius * 0.4,
+        pEnd[2] + tEnd[2] * radius * 0.4,
+        tEnd[0],
+        tEnd[1],
+        tEnd[2],
+        0.5,
+        1.0,
+      ]);
 
-    const lastRingStart = tubeVertexStart + (N - 1) * R;
-    for (let j = 0; j < radialSegments; j++) {
-      indices.push(endCapCenterIdx, lastRingStart + j, lastRingStart + j + 1);
+      const lastRingStart = tubeVertexStart + (N - 1) * R;
+      for (let j = 0; j < radialSegments; j++) {
+        indices.push(endCapCenterIdx, lastRingStart + j, lastRingStart + j + 1);
+      }
     }
 
     builder.appendIndices(indices);

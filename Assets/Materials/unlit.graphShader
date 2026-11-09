@@ -840,9 +840,6 @@ Nodes:
       PositionY: 141
       TemplateID: nodes_main_subgraph
       Title1: Transformed UV 3
-      ViewOffsetX0: -220
-      ViewOffsetY0: 34
-      ViewScale0: 0.40049985
     Node16:
       ChildNodes:
         Node0:
@@ -1378,15 +1375,6 @@ Nodes:
       PositionY: -620
       TemplateID: nodes_main_subgraph
       Title1: Base Color
-      ViewOffsetX0: 453
-      ViewOffsetX1: -492
-      ViewOffsetX2: -492
-      ViewOffsetX3: -492
-      ViewOffsetY0: 119
-      ViewOffsetY1: 100
-      ViewOffsetY2: 100
-      ViewOffsetY3: 100
-      ViewScale0: 0.7005832
     Node17:
       DependencyIndex: 67
       LevelID: 308
@@ -2101,9 +2089,6 @@ Nodes:
       PositionY: 108
       TemplateID: nodes_main_subgraph
       Title1: Opacity
-      ViewOffsetX0: 65
-      ViewOffsetY0: -126
-      ViewScale0: 0.8001666
     Node21:
       DependencyIndex: 86
       LevelID: 1
@@ -2158,8 +2143,7 @@ Nodes:
           Variable: 1.0
         DepthMode:
           ItemIndex: 0
-          ItemList: |2-
-            		Non-Linear - Normalized [0 to 1] ) :		Linear - Normalized [-1 to 1] :		View Space - Non-Normalized [-near to -far]	
+          ItemList: "Non-Linear - Normalized [0 to 1] : Linear - Normalized [-1 to 1] : View Space - Non-Normalized [-near to -far]"
         DontFreezeSpec:
           Variable: false
         FinalColor:
@@ -2177,18 +2161,31 @@ Nodes:
         FinalColor3:
           ClassType1: COLOR
           Variable: [1.0, 1.0, 1.0, 1.0]
+        GSplatPointSize:
+          Variable: 0.0
+        GSplatRotation:
+          Variable: [0.0, 0.0, 0.0, 1.0]
+        GSplatScale:
+          Variable: [0.0, 0.0, 0.0]
+        Motion Vector Pass:
+          ItemIndex: 0
+          ItemList: "Write Velocity and Depth : Discard Velocity but Write Depth : Discard Velocity and Depth"
         Negative:
           Variable: false
+        PrevWorldPosition:
+          Variable: [0.0, 0.0, 0.0]
         RayDirection:
           Variable: [0.0, 1.0, 0.0]
         RayOrigin:
           Variable: [0.0, 0.0, 0.0]
+        ShowPrevPos:
+          Variable: false
         Targets:
           ItemIndex: 0
           ItemList: "1 : 2 : 3 : 4"
         Type:
           ItemIndex: 0
-          ItemList: "3D : Post Effect : Hair"
+          ItemList: "3D : Post Effect : Hair : Gaussian Splatting"
         WorldNormal:
           Variable: [0.0, 1.0, 0.0]
         WorldPosition:
@@ -3044,8 +3041,6 @@ Nodes:
       PositionY: -496
       TemplateID: nodes_main_subgraph
       Title1: Transformed UV 2
-      ViewOffsetX0: 23
-      ViewOffsetY0: 54
   IsSubGraph0: true
   IsSubGraph1: true
   IsSubGraph2: true
@@ -3056,12 +3051,4 @@ Nodes:
   PositionY: 0
   TemplateID: nodes_main_subgraph
   Title1: ""
-  ViewOffsetX0: -2307
-  ViewOffsetX1: -2307
-  ViewOffsetX2: -2307
-  ViewOffsetX3: -2307
-  ViewOffsetY0: 70
-  ViewOffsetY1: 70
-  ViewOffsetY2: 70
-  ViewOffsetY3: 70
 SystemID: dev.snap.shaders

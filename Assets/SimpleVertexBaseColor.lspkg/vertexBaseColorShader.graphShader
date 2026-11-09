@@ -15,7 +15,6 @@ Nodes:
       PositionY: 145
       TemplateID: node_effect_global_surface_color
       Title1: Surface Color
-    Node0lockForPublic: false
     Node1:
       CommentSizeX: 0
       CommentSizeY: 0
@@ -28,8 +27,7 @@ Nodes:
           Variable: 1.0
         DepthMode:
           ItemIndex: 0
-          ItemList: |2-
-            		Non-Linear - Normalized [0 to 1] ) :		Linear - Normalized [-1 to 1] :		View Space - Non-Normalized [-near to -far]	
+          ItemList: "Non-Linear - Normalized [0 to 1] : Linear - Normalized [-1 to 1] : View Space - Non-Normalized [-near to -far]"
         DontFreezeSpec:
           Variable: false
         FinalColor:
@@ -79,13 +77,12 @@ Nodes:
         WorldTangent:
           Variable: [0.0, 0.0, 1.0]
         WriteDepth:
-          Variable: false
+          Variable: true
       PositionX: 220
       PositionY: 90
       TemplateID: nodes_main_graph
       Title1: Shader
       Title2: 3D
-    Node1lockForPublic: false
   IsSubGraph0: true
   IsSubGraph1: true
   IsSubGraph2: true
@@ -96,5 +93,4 @@ Nodes:
   PositionY: 0
   TemplateID: nodes_main_subgraph
   Title1: ""
-NodeslockForPublic: false
 SystemID: dev.snap.shaders

@@ -17,7 +17,7 @@ export const OVERHAND_KNOT_DATA: KnotDefinition = {
   steps: [
     {
       stepNumber: 1,
-      title: "Lay the rope out straight",
+      title: "",
       caption: "Lay the rope flat and straight. The colored end is the working end.",
       points: [
         [-20.0, 0.0, 0.0],
@@ -29,46 +29,46 @@ export const OVERHAND_KNOT_DATA: KnotDefinition = {
     },
     {
       stepNumber: 2,
-      title: "Cross the working end over the standing part to make a loop",
+      title: "",
       caption: "Cross the working end over the standing part to form a loop.",
       points: [
         [-20.0, 0.0, 0.0],
         [-12.0, 0.0, 0.0],
         [-4.0, 0.0, 0.0],
-        [4.0, 0.5, 0.0],
-        [10.0, 5.0, 0.0],
-        [8.0, 11.0, 0.5],
-        [0.0, 13.0, 1.0],
-        [-6.0, 8.0, 1.5],
-        [-6.0, 0.0, 1.5],
-        [-6.0, -8.0, 1.5]
+        [3.0, 0.0, 0.0],
+        [8.0, 4.0, 0.4],
+        [6.0, 10.5, 0.8],
+        [-0.5, 11.5, 1.2],
+        [-5.5, 7.0, 2.0],
+        [-5.5, 0.0, 2.2],
+        [-5.5, -6.0, 2.2]
       ]
     },
     {
       stepNumber: 3,
-      title: "Pass the working end behind, then up through the loop",
+      title: "",
       caption: "Pass the working end behind the loop and bring it up through the center.",
       points: [
         [-20.0, 0.0, 0.0],
         [-12.0, 0.0, 0.0],
         [-4.0, 0.0, 0.0],
-        [4.0, 0.5, 0.0],
-        [10.0, 5.0, 0.0],
-        [8.0, 11.0, 0.5],
-        [0.0, 13.0, 1.0],
-        [-6.0, 8.0, 1.5],
-        [-6.0, 0.0, 1.5],
-        [-6.0, -8.0, 1.5],
-        [-2.0, -9.0, -1.5],
-        [2.0, -4.0, -1.5],
-        [2.0, 6.0, -1.5],
-        [2.0, 6.0, 1.5],
-        [2.0, 12.0, 2.0]
+        [2.5, 0.0, 0.0],
+        [6.0, 3.0, 0.4],
+        [4.5, 7.5, 0.8],
+        [-0.5, 8.5, 1.2],
+        [-4.5, 5.0, 2.0],
+        [-4.5, 0.0, 2.2],
+        [-4.0, -3.5, 0.8],
+        [-2.0, -6.0, -2.5],
+        [1.5, -4.5, -2.5],
+        [1.5, 0.5, -2.5],
+        [1.5, 4.5, 0.5],
+        [1.5, 8.5, 2.5]
       ]
     },
     {
       stepNumber: 4,
-      title: "Pull both ends to tighten",
+      title: "",
       caption: "Pull both ends firmly in opposite directions to cinch the knot.",
       points: [
         [-8.0, -0.734, 0.0],
@@ -128,3 +128,42 @@ export const OVERHAND_KNOT_DATA: KnotDefinition = {
     }
   ]
 };
+
+// Intermediate waypoint for Step 2 -> 3 transition:
+// Working end dips gently and swings behind into -Z (Z <= -2.5) while the loop starts narrowing
+export const OVERHAND_WAYPOINT_2_TO_3: [number, number, number][] = [
+  [-20.0, 0.0, 0.0],
+  [-12.0, 0.0, 0.0],
+  [-4.0, 0.0, 0.0],
+  [3.0, 0.0, 0.0],
+  [7.5, 3.5, 0.4],
+  [5.5, 9.5, 0.8],
+  [-0.5, 10.5, 1.2],
+  [-5.5, 6.0, 2.0],
+  [-5.5, 0.0, 2.2],
+  [-5.0, -4.5, 1.2],
+  [-2.5, -7.5, -2.5],
+  [1.5, -6.5, -2.5],
+  [1.5, -2.0, -2.5]
+];
+
+// Intermediate waypoint for Step 3 -> 4 tightening transition:
+// Working end stays threaded through the loop aperture, bending forward-right as the loop contracts
+export const OVERHAND_WAYPOINT_3_TO_4: [number, number, number][] = [
+  [-14.0, -0.4, 0.0],
+  [-8.0, -0.4, 0.0],
+  [-2.5, -0.4, 0.0],
+  [1.5, -0.4, -0.2],
+  [3.5, 1.5, -0.2],
+  [2.5, 4.5, 0.3],
+  [-0.5, 4.8, 0.7],
+  [-2.5, 3.0, 1.2],
+  [-2.5, 0.0, 1.5],
+  [-2.0, -2.0, 0.5],
+  [-1.0, -3.5, -1.5],
+  [0.5, -2.5, -1.5],
+  [0.5, 0.2, -1.0],
+  [1.0, 1.5, 1.2],
+  [3.5, 0.2, 0.8],
+  [6.0, -0.7, 0.2]
+];

@@ -1,0 +1,61 @@
+- !<AssetImportMetadata/ea4e45e8-2878-48ff-abca-9d035a18a76d>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> b80e7b10-9e40-4a76-97cc-1b6c08da486e
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> b80e7b10-9e40-4a76-97cc-1b6c08da486e
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 4c203917-f618-401d-a6af-f01fabe76959
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/4c203917-f618-401d-a6af-f01fabe76959>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: d23947f0-18a8-4e35-b634-c91a25783ccc
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    captionTextObject: false
+    modelCenterY: false
+    modelScale: false
+    navyMaterial: false
+    silverMaterial: false
+    titleTextObject: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - navyMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      silverMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      captionTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      titleTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      modelScale: !<float> 1.000000
+      modelCenterY: !<float> 0.000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - // @input Asset.Material navyMaterial
+    - // @input Asset.Material silverMaterial
+    - // @input SceneObject captionTextObject
+    - // @input SceneObject titleTextObject
+    - // @input float modelScale = 1
+    - // @input float modelCenterY

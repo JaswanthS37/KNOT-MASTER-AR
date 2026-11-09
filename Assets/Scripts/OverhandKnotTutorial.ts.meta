@@ -29,6 +29,8 @@
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
     captionTextObject: false
+    crimsonMaterial: false
+    hempMaterial: false
     material: false
     titleTextObject: false
   ScriptTypesHidden:
@@ -41,6 +43,8 @@
     []
   DefaultScriptInputs:
     - material: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      hempMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      crimsonMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
       captionTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       titleTextObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
   ScriptTypes:
@@ -48,5 +52,7 @@
       {}
   InputLines:
     - // @input Asset.Material material
+    - // @input Asset.Material hempMaterial
+    - // @input Asset.Material crimsonMaterial
     - // @input SceneObject captionTextObject
     - // @input SceneObject titleTextObject

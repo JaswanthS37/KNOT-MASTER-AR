@@ -29,10 +29,23 @@
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
     backToMenuButton: false
+    bowlineCardButton: false
+    bowlineRopeObject: false
+    bowlineTutorial: false
+    camera: false
     fourInHandCardButton: false
+    fourInHandObject: false
+    fourInHandTutorial: false
+    iconMaterial: false
+    knotRopeObject: false
     knotTutorial: false
     mainMenuContainer: false
+    menuIconTex: false
+    menuSubtitleObject: false
+    menuTitleObject: false
     overhandCardButton: false
+    planeMesh: false
+    stepController: false
     tutorialContainer: false
   ScriptTypesHidden:
     {}
@@ -46,9 +59,22 @@
     - mainMenuContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       tutorialContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       overhandCardButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      bowlineCardButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       fourInHandCardButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       backToMenuButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      menuTitleObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      menuSubtitleObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      planeMesh: !<reference.RenderMesh> 00000000-0000-0000-0000-000000000000
+      iconMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      menuIconTex: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      knotRopeObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      bowlineRopeObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      fourInHandObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       knotTutorial: !<MappingBased.AssignableType_1> 00000000-0000-0000-0000-000000000000
+      bowlineTutorial: !<MappingBased.AssignableType_2> 00000000-0000-0000-0000-000000000000
+      fourInHandTutorial: !<MappingBased.AssignableType_3> 00000000-0000-0000-0000-000000000000
+      stepController: !<MappingBased.AssignableType_4> 00000000-0000-0000-0000-000000000000
+      camera: !<reference.Camera> 00000000-0000-0000-0000-000000000000
   ScriptTypes:
     -
       {}
@@ -56,6 +82,19 @@
     - // @input SceneObject mainMenuContainer
     - // @input SceneObject tutorialContainer
     - // @input SceneObject overhandCardButton
+    - // @input SceneObject bowlineCardButton
     - // @input SceneObject fourInHandCardButton
     - // @input SceneObject backToMenuButton
+    - // @input SceneObject menuTitleObject
+    - // @input SceneObject menuSubtitleObject
+    - // @input Asset.RenderMesh planeMesh
+    - // @input Asset.Material iconMaterial
+    - // @input Asset.Texture menuIconTex
+    - // @input SceneObject knotRopeObject
+    - // @input SceneObject bowlineRopeObject
+    - // @input SceneObject fourInHandObject
     - // @input AssignableType_1 knotTutorial
+    - // @input AssignableType_2 bowlineTutorial
+    - // @input AssignableType_3 fourInHandTutorial
+    - // @input AssignableType_4 stepController
+    - // @input Component.Camera camera

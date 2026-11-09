@@ -1,0 +1,26 @@
+- !<AssetImportMetadata/f934856e-c162-4f5a-bc85-917fbb941ebf>
+  ImportedAssetIds:
+    Font: !<reference> 8bd2d382-0e2c-40e0-be47-b5eb708cfa91
+  ImporterName: FontImporter
+  PrimaryAsset: !<reference> 8bd2d382-0e2c-40e0-be47-b5eb708cfa91
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    Font: !<own> 113234e1-0b3d-4d07-982c-99aa603ec881
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<FontAssetData/113234e1-0b3d-4d07-982c-99aa603ec881>
+  VariableFontMetadata:
+    axes:
+      []
+    namedInstances:
+      []
+    defaultCoordinates:
+      []
+  CustomVariationStyles:
+    []
