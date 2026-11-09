@@ -1,0 +1,17 @@
+data:
+  highlightType: Snap.Plugin.Gui.SceneEditor.ColorHighlight
+  visibility:
+    showCounters: true
+    showGrid: true
+    showJointVisualization: true
+  cameraClip: 3
+  scriptsEnabled: false
+  layerVisibility: 1310719
+  mouseSpace: Local
+  worldGrid:
+    origin: {x: 0.000000, y: 0.000000, z: 0.000000}
+    step: {x: 10.000000, y: 10.000000, z: 10.000000}
+    enabled: false
+    angleStepRadians: 0.785398
+    scaleSnapStep: 10.000000
+    translationSnapOrigin: Pivot

@@ -1,0 +1,39 @@
+data:
+  cameraToMultimedia:
+    - Front: PreviewResources.bundle/Video/Idle/Idle.mp4
+    - Back: PreviewResources.bundle/Video/World/Beach.mp4
+  cameraType: Perspective
+  colorSpace: Default
+  deviceTypeOverride: Spectacles
+  interactiveAspect: 0.666667
+  interactiveFov: 36.587372
+  spectaclesMaximizeViewport: false
+  internetAvailableOverride: true
+  inputSourceData:
+    type: Interactive
+    input:
+      source: InteractiveResources.bundle/Scenes/Evening Outdoor
+      upscale: 1280
+    cameraView: Front
+  isMuted: false
+  locale: en
+  deviceName: SPECS 27
+  devicePose:
+    eulerRotation: {x: -1.326415, y: -1.801998, z: 0.018136}
+    translation: {x: -2.697663, y: 3.000000, z: -0.671775}
+  mirrorHorizontally: false
+  mirrorVertically: false
+  outputTarget: Live
+  recordInputInsteadOfOutput: false
+  recordTrackingData: false
+  resolutionScale: 1.000000
+  showCaptureHint: false
+  showDrawCalls: false
+  showFrameRate: false
+  showLiveHint: false
+  stereoEye: Center
+  targetFrameRate: 30
+  tintSpectacles: false
+  enableSafeRegion: false
+  uiMode: DoNotShow
+  userId: 466a4a0f-52c3-29b5-f729-2ed3977b800c
